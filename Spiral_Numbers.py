@@ -46,7 +46,7 @@ matrix = numpy.empty([height, width], dtype='int32')
 # iteration will tell the loop how many numbers to enter into a row/column
 iteration = 1
 
-# direction will tell the loop to increment or decrement. Start by going right from middle
+# direction will tell the position to increment or decrement. Start by going right from middle
 # 1=r, 2=d, 3=l, 4=u
 direction = 1
 
@@ -57,10 +57,7 @@ position = [median, median]
 # So each iteration needs to happen twice, so print needs to be inside the iteration
 i = 0
 while True:
-    # print "iteration"
-    # print iteration
     for x in range(2):
-    	#print x
         for j in range(iteration):
             if i <= number:
                 matrix[position[0]][position[1]] = int(i)
@@ -68,6 +65,8 @@ while True:
                 if i >= last_num:
                     break
                 else:
+                	# Fill spaces beyon 'number' with zeroes to fill out the square
+                	# Zeroes will be removed in the final print
                     matrix[position[0]][position[1]] = 0
             i += 1
             if direction == 1:
@@ -87,7 +86,6 @@ while True:
     if i == last_num:
         break;
 
-
 # Print the matrix all pretty like
 # Doesn't print zeros and spaces numbers out.
 for x in range(int(height)):
@@ -100,6 +98,3 @@ for x in range(int(height)):
             row = row + str(matrix[x][y])
         row = row + "\t"
     print row
-
-
-
