@@ -9,6 +9,10 @@ while(True):
         val = int(number)
         if val < 0:
             raise ValueError
+        # 728 is the highest value that still appears nice on my screen
+        if val > 728:
+            print "Large values will appear poorly depending on screen size."
+            raw_input('Press enter to continue.')
         break
     except ValueError:
         continue
@@ -37,7 +41,7 @@ median = math.ceil(height / 2)
 median = int(median-1)
 
 # Initialize matrix
-matrix = numpy.empty([height, width], dtype='int16')
+matrix = numpy.empty([height, width], dtype='int32')
 
 # iteration will tell the loop how many numbers to enter into a row/column
 iteration = 1
