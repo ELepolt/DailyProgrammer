@@ -16,7 +16,7 @@ namespace DailyProgrammer
             //Console.WriteLine(ThueMorseSequence(6));
 
             // Shakespeares
-            RememberYourLines("Eye of newt");
+            RememberYourLines("give thee");
         }
 
         /// <summary>
@@ -60,62 +60,71 @@ namespace DailyProgrammer
         /// <returns></returns>
         static void RememberYourLines(string forgottenLine)
         {
+            // passage will hold each line as it comes in, and will refresh when
+            // it switches to a different character
+            var passages = new Dictionary<string,List<string>>();
             var passage = new List<string>();
+            // Just for fun to know who said what
             var speakingCharacter = "";
+            // flag to know when to break and stop reading through the play
             var passageContainsForgottenLine = false;
             
             // Get the file from the interwebz
             string line;
             WebClient client = new WebClient();
             Stream stream = client.OpenRead("https://gist.githubusercontent.com/Quackmatic/f8deb2b64dd07ea0985d/raw/macbeth.txt");
-            StreamReader reader = new StreamReader(stream);
 
-            // Loop through the file.
-            while ((line = reader.ReadLine()) != null)
+            using (var reader = new StreamReader(stream))
             {
-                // If the first four characters are blank than it is part of a dialogue
-                // Therefore add the line to the variable passage
-                if (line.Length > 3 && line.Substring(0, 4) == "    ")
+                // Loop through the file.
+                while ((line = reader.ReadLine()) != null)
                 {
-                    passage.Add(line);
-                    if (line.Contains(forgottenLine))
+                    // If the first four characters are blank than it is part of a dialogue
+                    // Therefore add the line to the variable passage
+                    if (line.Length > 3 && line.Substring(0, 4) == "    ")
                     {
-                        passageContainsForgottenLine = true;
+                        // Add the line to the passage.
+                        passage.Add(line);
+                        if (line.ToLower().Contains(forgottenLine.ToLower()))
+                        {
+                            passageContainsForgottenLine = true;
+                        }
                     }
-                }
-                // If the first two characters are blank, then it is the start of a new
-                // character speaking. Clear the passage, and make note of the new character.
-                else if (line.Length > 1 && line.Substring(0, 2) == "  ")
-                {
-                    speakingCharacter = line.Replace(".", "");
-                    passage = new List<string>();
-                }
-                // If the line is empty it's a new character speaking, or a new act.
-                // If the passage contains the line, break out of the loop
-                else if (line == "")
-                {
-                    if (passageContainsForgottenLine)
+                    // If the first two characters are blank, then it is the start of a new
+                    // character speaking. Clear the passage, and make note of the new character.
+                    else if (line.Length > 1 && line.Substring(0, 2) == "  ")
                     {
-                        break;
+                        speakingCharacter = line.Replace(".", "");
+                        passage = new List<string>();
                     }
-                    else
+                    // If the line is empty it's a new character speaking, or a new act.
+                    // If the passage contains the line, break out of the loop
+                    else if (line == "")
                     {
-                        speakingCharacter = "";
+                        if (passageContainsForgottenLine)
+                        {
+                            passages.Add(speakingCharacter, passage);
+                            passageContainsForgottenLine = false;
+                        }
+                        else
+                        {
+                            speakingCharacter = "";
+                        }
                     }
                 }
             }
 
-            // Always close the stream when finished using
-            stream.Close();
-            reader.Close();
-
-            if (passageContainsForgottenLine)
+            if (passages.Count() > 0)
             {
                 // Print the passage
-                Console.WriteLine(string.Concat(speakingCharacter, ":"));
-                foreach (var passageLine in passage)
+                foreach (var passageSection in passages)
                 {
-                    Console.WriteLine(passageLine);
+                    Console.WriteLine(passageSection.Key);
+                    foreach (var passageLine in passageSection.Value)
+                    {
+                        Console.WriteLine(passageLine);
+                    }
+                    Console.WriteLine("---------------------------");
                 }
             }
             else
