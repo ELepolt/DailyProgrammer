@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DailyProgrammer
 {
-    class Program
+    public static class Program
     {
         static void Main(string[] args)
         {
@@ -16,9 +17,14 @@ namespace DailyProgrammer
             //Console.WriteLine(ThueMorseSequence(6));
 
             // Shakespeares
-            RememberYourLines("give thee");
+            //RememberYourLines("give thee");
+
+            // Friendly Dates
+            var friendlyDate = FriendlyDates(new DateTime(2022, 09, 05), new DateTime(2023, 09, 04));
+            Console.WriteLine(friendlyDate);
         }
 
+        #region ThueMorseSequence
         /// <summary>
         /// http://www.reddit.com/r/dailyprogrammer/comments/2cld8m/8042014_challenge_174_easy_thuemorse_sequences/
         /// Takes the degree and outputs the Thue-Morse Sequence to that degree
@@ -49,7 +55,9 @@ namespace DailyProgrammer
 
             return sequence;
         }
+        #endregion
 
+        #region RememberYourLines
         /// <summary>
         /// http://www.reddit.com/r/dailyprogrammer/comments/2xoxum/20150302_challenge_204_easy_remembering_your_lines/
         /// Given a line from Shakespeare's Macbeth, print out the entirety of the passage that it belongs to
@@ -119,6 +127,8 @@ namespace DailyProgrammer
                 // Print the passage
                 foreach (var passageSection in passages)
                 {
+                    // passageSection.Key is the speaking character
+                    // passageSection.Value is the list of lines in the passage
                     Console.WriteLine(passageSection.Key);
                     foreach (var passageLine in passageSection.Value)
                     {
@@ -133,6 +143,89 @@ namespace DailyProgrammer
             }
             // Suspend the screen.
             Console.ReadLine();
+        }
+        #endregion
+
+        /// <summary>
+        /// http://www.reddit.com/r/dailyprogrammer/comments/2ygsxs/20150309_challenge_205_easy_friendly_date_ranges/
+        /// Given two dates, print a friendly version of the range
+        /// </summary>
+        /// <example>
+        /// 2015-07-01 2015-07-04 returns July 1st - 4th
+        /// </example>
+        public static string FriendlyDates(DateTime startDate, DateTime endDate)
+        {
+            string returnString = string.Concat(GetMonth(startDate), " ", OrdinalSuffix(startDate));
+            
+            // difference == number of days of difference
+            var difference = endDate - startDate;
+            
+            // begin a slew of multi else if chain to compare the difference in dates
+            // if the dates are the same, return the date as a readable format with year
+            if (startDate == endDate)
+            {
+                returnString += string.Concat(", ", startDate.Year);
+            }
+            // if the difference in days is <= 31 and the start/end months match, just concat with the same month
+            else if (difference.Days <= 30 && startDate.Month == endDate.Month)
+            {
+                returnString += string.Concat(" - ", OrdinalSuffix(endDate));
+            }
+            // if the difference is <= 364
+            else if (difference.Days <= 364)
+            {
+                // If the years match, just return the months with the year attached at the end
+                if (startDate.Year == endDate.Year)
+                {
+                    returnString += string.Concat(" - ", GetMonth(endDate), " ", OrdinalSuffix(endDate), ", ", endDate.Year);
+                }
+                // else if the months match but it has reached this line than it's had a change of year, so show the year on both
+                else if (startDate.Month == endDate.Month)
+                {
+                    returnString += string.Concat(", ", startDate.Year, " - ",GetMonth(endDate), " ", OrdinalSuffix(endDate), ", ", endDate.Year);
+                }
+                // else it's been less than a year
+                // I don't necessarily agree with this one: December 1st - February 3rd
+                else
+                {
+                    returnString += string.Concat(" - ", GetMonth(endDate), " ", OrdinalSuffix(endDate));
+                }
+            }
+            // else it's been more than a year, so show both months and years for each date 
+            else
+            {
+                returnString += string.Concat(", ", startDate.Year, " - ", GetMonth(endDate), " ", OrdinalSuffix(endDate), ", ", endDate.Year);
+            }
+
+            return returnString;
+        }
+
+        static string GetMonth(DateTime dateTime)
+        {
+            return dateTime.ToString("MMMM");
+        }
+        /// <summary>
+        /// Returns the ordinal suffix for the day of the month represented by this instance
+        /// </summary>
+        /// <returns></returns>
+        static string OrdinalSuffix(DateTime datetime)
+        {
+            int day = datetime.Day;
+
+            if (day % 100 >= 11 && day % 100 <= 13)
+                return String.Concat(day, "th");
+
+            switch (day % 10)
+            {
+                case 1:
+                    return String.Concat(day, "st");
+                case 2:
+                    return String.Concat(day, "nd");
+                case 3:
+                    return String.Concat(day, "rd");
+                default:
+                    return String.Concat(day, "th");
+            }
         }
     }
 }
