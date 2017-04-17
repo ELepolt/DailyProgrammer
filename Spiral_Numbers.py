@@ -4,15 +4,15 @@ import numpy
 
 # # Get the number
 while(True):
-    number = raw_input('Please enter a positive integer: ')
+    number = input('Please enter a positive integer: ')
     try:
         val = int(number)
         if val < 0:
             raise ValueError
         # 728 is the highest value that still appears nice on my screen
         if val > 728:
-            print "Large values will appear poorly depending on screen size."
-            raw_input('Press enter to continue.')
+            print("Large values will appear poorly depending on screen size.")
+            input('Press enter to continue.')
         break
     except ValueError:
         continue
@@ -97,4 +97,4 @@ for x in range(int(height)):
         else:
             row = row + str(matrix[x][y])
         row = row + "\t"
-    print row
+    print(row)
