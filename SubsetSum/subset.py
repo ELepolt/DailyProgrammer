@@ -23,14 +23,14 @@ input_lists = [
 ]
 
 
-output = [False, False, False, True, True, True, False, False, False, False, False, True, True, True, True, True,]
+output = [False, True, False, True, True, True, False, False, False, False, False, True, True, True, True, True,]
 
 def main():
     challenge_output = []
     for input_list in input_lists:
-        subset_contains_zero = sum(input_list)
+        subset_contains_zero = compare_all(input_list)
         for a, b in itertools.combinations(input_list, 2):
-            if compare(a, b) or a == 0 or b == 0:
+            if a == 0 or b == 0 or compare(a, b):
                 subset_contains_zero = True
                 break
 
@@ -40,8 +40,20 @@ def main():
 
 def compare(a, b):
     return a + b == 0
-   
+
+# Lol, this is terribly inefficient
+def compare_all(input_list):
+    negatives = list(filter(lambda x: x < 0, input_list))
+    positives = list(filter(lambda x: x > 0, input_list))
+
+    for negative_index, negative_i in enumerate(negatives):
+        for negative_sum in itertools.combinations(negatives, len(negatives) - negative_index):
+            for positive_index, positive_i in enumerate(positives):
+                for positive_sum in itertools.combinations(positives, len(positives) - positive_index):
+                    if sum(negative_sum) + sum(positive_sum) == 0:
+                        return True
+
+    return False
+
 if __name__ == "__main__":
     main()
-
-
