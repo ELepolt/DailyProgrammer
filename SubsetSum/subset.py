@@ -11,7 +11,7 @@ def main():
     for input_list in input_lists:
         subset_contains_zero = False
         for a, b in itertools.combinations(input_list, 2):
-            if compare(a, b):
+            if compare(a, b) or a == 0 or b == 0:
                 subset_contains_zero = True
                 break
 
