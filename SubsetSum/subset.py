@@ -41,17 +41,12 @@ def main():
 def compare(a, b):
     return a + b == 0
 
-# Lol, this is terribly inefficient
+# Stole this from some guy on the internet
 def compare_all(input_list):
-    negatives = list(filter(lambda x: x < 0, input_list))
-    positives = list(filter(lambda x: x > 0, input_list))
-
-    for negative_index, negative_i in enumerate(negatives):
-        for negative_sum in itertools.combinations(negatives, len(negatives) - negative_index):
-            for positive_index, positive_i in enumerate(positives):
-                for positive_sum in itertools.combinations(positives, len(positives) - positive_index):
-                    if sum(negative_sum) + sum(positive_sum) == 0:
-                        return True
+    for i in range(1, len(input_list)):
+        for combinations in itertools.combinations(input_list, i):
+            if sum(combinations) == 0:
+                return True
 
     return False
 
