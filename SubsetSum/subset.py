@@ -28,7 +28,7 @@ output = [False, True, False, True, True, True, False, False, False, False, Fals
 def main():
     challenge_output = []
     for input_list in input_lists:
-        subset_contains_zero = compare_all(input_list)
+        subset_contains_zero = split_and_add(input_list)
         for a, b in itertools.combinations(input_list, 2):
             if a == 0 or b == 0 or compare(a, b):
                 subset_contains_zero = True
@@ -42,13 +42,47 @@ def compare(a, b):
     return a + b == 0
 
 # Stole this from some guy on the internet
-def compare_all(input_list):
+def combinations(input_list):
+    # runs in real	0m0.685s
     for i in range(1, len(input_list)):
         for combinations in itertools.combinations(input_list, i):
             if sum(combinations) == 0:
                 return True
 
     return False
+
+def split_and_add(input_list):
+    negatives = list(filter(lambda x: x < 0, input_list))
+    positives = list(filter(lambda x: x > 0, input_list))
+
+    negative_sums = []
+    for i in range(1, len(negatives)):
+        for neg_combination in itertools.combinations(negatives, i):
+            negative_sums.append(sum(neg_combination))
+
+    positive_sums = []
+    for i in range(1, len(positives)):
+        for pos_combination in itertools.combinations(positives, i):
+            positive_sums.append(sum(pos_combination))
+
+    for num in negative_sums:
+        if -num in positive_sums:
+            return True
+
+    return False
+
+def inefficient_loops(input_list):
+    negatives = list(filter(lambda x: x < 0, input_list))
+    positives = list(filter(lambda x: x > 0, input_list))
+    
+    for negative_index, negative_i in enumerate(negatives):
+        for negative_sum in itertools.combinations(negatives, len(negatives) - negative_index):
+            for positive_index, positive_i in enumerate(positives):
+                for positive_sum in itertools.combinations(positives, len(positives) - positive_index):
+                    if sum(negative_sum) + sum(positive_sum) == 0:
+                        return True
+
+import timeit
 
 if __name__ == "__main__":
     main()
